@@ -12,57 +12,39 @@ interface Node {
   _id: ID!
 }
 
-type Author {
-  _id: ID!
-  firstName: String
-  lastName: String
-  posts: [Post]!
+type LoginPayload {
+  access_token: String!
+  refresh_token: String!
+  profile: Auth!
 }
 
-type User implements Node {
+type Auth implements Node {
   _id: ID!
   firstName: String!
   lastName: String!
   email: String!
 }
 
-type Auth {
+type TokensEntity {
   access_token: String!
+  refresh_token: String!
 }
 
 type Query {
-  author(id: Int!): Author!
+  ping: String!
   posts: [Post!]!
   post(id: Int!): Post!
-  ping: String!
-  users: [User!]!
-  userById(id: String!): User!
-  whoAmI: User!
+  whoAmI: Auth!
 }
 
 type Mutation {
-  createAuthor(createAuthorInput: CreateAuthorInput!): Author!
-  updateAuthor(updateAuthorInput: UpdateAuthorInput!): Author!
-  removeAuthor(id: Int!): Author!
+  echo(message: String!): String!
   createPost(createPostInput: CreatePostInput!): Post!
   updatePost(updatePostInput: UpdatePostInput!): Post!
   removePost(id: Int!): Post!
-  echo(message: String!): String!
-  createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(id: Int!): User!
-  login(loginInput: LoginInput!): Auth!
-}
-
-input CreateAuthorInput {
-  firstName: String
-  lastName: String = ""
-}
-
-input UpdateAuthorInput {
-  firstName: String
-  lastName: String = ""
-  id: Int!
+  signup(signupInput: SignupInput!): LoginPayload!
+  login(loginInput: LoginInput!): LoginPayload!
+  refreshTokens: TokensEntity!
 }
 
 input CreatePostInput {
@@ -76,19 +58,11 @@ input UpdatePostInput {
   id: Int!
 }
 
-input CreateUserInput {
+input SignupInput {
   firstName: String!
   lastName: String!
   email: String!
   password: String!
-}
-
-input UpdateUserInput {
-  firstName: String
-  lastName: String
-  email: String
-  password: String
-  id: Int!
 }
 
 input LoginInput {

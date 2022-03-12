@@ -1,23 +1,26 @@
+import { RtStrategy } from './strategies/rt.strategy';
+import { AtStrategy } from './strategies/at.strategy';
+import { Auth, AuthFactory } from './entities/auth.entity';
+import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { AuthResolver } from './auth.resolver';
-import { UsersModule } from './../users/users.module';
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './strategies/local.strategy';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import config from 'src/config';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    UsersModule,
     PassportModule,
-    JwtModule.register({
-      secret: config.JWT_SECRET,
-      signOptions: { expiresIn: '60s' },
-    }),
+    JwtModule.register({}),
+    MongooseModule.forFeatureAsync([
+      {
+        name: Auth.name,
+        useFactory: AuthFactory,
+        inject: [getConnectionToken()],
+      },
+    ]),
   ],
-  providers: [AuthService, LocalStrategy, AuthResolver, JwtStrategy],
+  providers: [AuthService, AuthResolver, AtStrategy, RtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
